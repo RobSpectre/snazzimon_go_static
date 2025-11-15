@@ -32,5 +32,6 @@ export enum GameState {
   FTU,
   FIND,
   CAPTURE,
+  REPLAY,
   GAME_OVER,
 }

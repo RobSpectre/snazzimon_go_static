@@ -5,9 +5,10 @@ import { CloseIcon, SnazziBallIcon } from './icons';
 interface SnazzidexProps {
   capturedSnazzimons: SnazzimonData[];
   onClose: () => void;
+  onSnazzimonClick: (snazzimon: SnazzimonData) => void;
 }
 
-const Snazzidex: React.FC<SnazzidexProps> = ({ capturedSnazzimons, onClose }) => {
+const Snazzidex: React.FC<SnazzidexProps> = ({ capturedSnazzimons, onClose, onSnazzimonClick }) => {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
       <style>{`
@@ -31,7 +32,14 @@ const Snazzidex: React.FC<SnazzidexProps> = ({ capturedSnazzimons, onClose }) =>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {capturedSnazzimons.map((snazzimon) => (
-                <div key={snazzimon.id} className="bg-slate-700/50 p-3 rounded-lg flex flex-col items-center text-center shadow-md border border-slate-600 transition-all duration-300 hover:border-blue-400 hover:scale-105 hover:bg-slate-700">
+                <div
+                  key={snazzimon.id}
+                  onClick={() => {
+                    onClose();
+                    onSnazzimonClick(snazzimon);
+                  }}
+                  className="bg-slate-700/50 p-3 rounded-lg flex flex-col items-center text-center shadow-md border border-slate-600 transition-all duration-300 hover:border-blue-400 hover:scale-105 hover:bg-slate-700 cursor-pointer"
+                >
                   <div className="relative w-24 h-24 mb-3">
                     <div className="absolute inset-0 bg-blue-400/20 rounded-full blur-md"></div>
                     <img src={snazzimon.image} alt={snazzimon.name} className="relative w-full h-full rounded-full border-2 border-blue-400" />

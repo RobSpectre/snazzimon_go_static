@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FTUScreen from './components/FTUScreen';
 import FindScreen from './components/FindScreen';
 import CaptureScreen from './components/CaptureScreen';
+import ReplayScreen from './components/ReplayScreen';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useHaversine } from './hooks/useHaversine';
 import { GameState } from './types';
@@ -59,10 +60,11 @@ const App: React.FC = () => {
 
   const [isCapturePossible, setIsCapturePossible] = useState(false);
   const [isEncounterTriggered, setIsEncounterTriggered] = useState(false);
+  const [replaySnazzimon, setReplaySnazzimon] = useState<SnazzimonData | null>(null);
 
   const { location, error: geoError, permissionState, requestPermission } = useGeolocation();
 
-  // Parse URL for checkpoint ID (e.g., /#/id/1 or /id/1)
+  // Parse URL for checkpoint ID (e.g., /#/id/1 or /id/1 or /id/1/capture)
   useEffect(() => {
     const parseCheckpointFromURL = () => {
       // Try hash-based routing first
@@ -73,16 +75,25 @@ const App: React.FC = () => {
         path = window.location.pathname;
       }
 
-      // Match /id/NUMBER pattern
-      const match = path.match(/\/id\/(\d+)/);
+      // Match /id/NUMBER or /id/NUMBER/capture pattern
+      const match = path.match(/\/id\/(\d+)(\/capture)?/);
       if (match && gameData) {
         const checkpointId = parseInt(match[1], 10);
         const checkpointIndex = checkpointId - 1; // Convert ID to 0-based index
+        const isCapture = match[2] === '/capture'; // Check if /capture is in the URL
 
         // Validate checkpoint exists
         if (checkpointIndex >= 0 && checkpointIndex < gameData.checkpoints.length) {
           setCurrentCheckpointIndex(checkpointIndex);
-          setGameState(GameState.FIND);
+
+          if (isCapture) {
+            // Go directly to capture screen
+            setGameState(GameState.CAPTURE);
+          } else {
+            // Go to find screen
+            setGameState(GameState.FIND);
+          }
+
           setIsEncounterTriggered(false);
           setIsCapturePossible(false);
 
@@ -180,12 +191,12 @@ const App: React.FC = () => {
 
   const handleCapture = () => {
     if (!gameData || !currentCheckpoint) return;
-    
+
     const snazzimon = gameData.snazzimons.find(s => s.id === currentCheckpoint.snazzimonId);
     if (snazzimon && !capturedSnazzimons.some(s => s.id === snazzimon.id)) {
       setCapturedSnazzimons(prev => [...prev, snazzimon]);
     }
-    
+
     const nextIndex = currentCheckpointIndex + 1;
     if (nextIndex < gameData.checkpoints.length) {
       setCurrentCheckpointIndex(nextIndex);
@@ -198,6 +209,16 @@ const App: React.FC = () => {
       setCurrentCheckpointIndex(nextIndex);
       setGameState(GameState.GAME_OVER);
     }
+  };
+
+  const handleStartReplay = (snazzimon: SnazzimonData) => {
+    setReplaySnazzimon(snazzimon);
+    setGameState(GameState.REPLAY);
+  };
+
+  const handleEndReplay = () => {
+    setReplaySnazzimon(null);
+    setGameState(GameState.FIND);
   };
   
   if (isLoading) {
@@ -246,6 +267,7 @@ const App: React.FC = () => {
             checkpoint={currentCheckpoint}
             capturedSnazzimons={capturedSnazzimons}
             isCapturePossible={isCapturePossible}
+            onSnazzimonClick={handleStartReplay}
           />
         );
 
@@ -275,10 +297,34 @@ const App: React.FC = () => {
             );
         }
         return (
-          <CaptureScreen 
-            snazzimon={snazzimon} 
-            successProbability={currentCheckpoint.successProbability} 
+          <CaptureScreen
+            snazzimon={snazzimon}
+            successProbability={currentCheckpoint.successProbability}
             onCapture={handleCapture}
+          />
+        );
+
+      case GameState.REPLAY:
+        if (!replaySnazzimon) {
+          return (
+            <div className="w-full h-full bg-slate-900 text-white flex flex-col items-center justify-center p-4 text-center">
+              <h1 className="text-3xl font-bold text-red-500">Replay Error!</h1>
+              <p className="text-lg mt-2">Could not find the Snazzimon to replay.</p>
+              <button onClick={() => setGameState(GameState.FIND)} className="mt-8 bg-gradient-to-b from-blue-400 to-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg border-2 border-blue-200 hover:from-blue-300 transition-transform transform hover:scale-105">
+                Return to Map
+              </button>
+            </div>
+          );
+        }
+        // Find the checkpoint that corresponds to this Snazzimon to get the success probability
+        const replayCheckpoint = gameData.checkpoints.find(cp => cp.snazzimonId === replaySnazzimon.id);
+        const replaySuccessProbability = replayCheckpoint?.successProbability ?? 0.5;
+
+        return (
+          <ReplayScreen
+            snazzimon={replaySnazzimon}
+            successProbability={replaySuccessProbability}
+            onBack={handleEndReplay}
           />
         );
 

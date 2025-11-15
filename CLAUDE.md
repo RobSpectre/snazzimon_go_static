@@ -140,13 +140,14 @@ Video playback state should be managed via `useState` and `useEffect` hooks that
 
 ### URL-Based Checkpoint Navigation
 The app supports jumping to specific checkpoints via URL:
-- Hash-based: `https://snazzimongo.com/#/id/1` (checkpoint 1)
-- Path-based: `https://snazzimongo.com/id/2` (checkpoint 2)
+- Hash-based: `https://snazzimongo.com/#/id/1` (checkpoint 1, FIND state)
+- Path-based: `https://snazzimongo.com/id/2` (checkpoint 2, FIND state)
+- Direct capture: `https://snazzimongo.com/id/1/capture` (checkpoint 1, CAPTURE state)
 
 The checkpoint ID in the URL is 1-based (matching checkpoint IDs in game-data.json).
 After parsing the URL, the app:
 1. Sets the checkpoint index (ID - 1)
-2. Transitions to FIND state
+2. Transitions to FIND state (or CAPTURE state if `/capture` suffix is present)
 3. Clears the URL to prevent re-triggering
 4. Resets encounter states
 
@@ -154,3 +155,4 @@ This is useful for:
 - Testing specific checkpoints during development
 - Sharing direct links to checkpoints
 - Debugging location-based features
+- Testing capture sequences without needing to be at the physical location (`/id/#/capture`)

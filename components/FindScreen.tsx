@@ -11,9 +11,10 @@ interface FindScreenProps {
   checkpoint: Checkpoint;
   capturedSnazzimons: SnazzimonData[];
   isCapturePossible: boolean;
+  onSnazzimonClick: (snazzimon: SnazzimonData) => void;
 }
 
-const FindScreen: React.FC<FindScreenProps> = ({ playerLocation, checkpoint, capturedSnazzimons, isCapturePossible }) => {
+const FindScreen: React.FC<FindScreenProps> = ({ playerLocation, checkpoint, capturedSnazzimons, isCapturePossible, onSnazzimonClick }) => {
   const { distance, bearing } = useHaversine(playerLocation, checkpoint.coordinates);
   const { heading, permissionState, isSupported, requestPermission } = useDeviceOrientation();
   const [isSnazzidexOpen, setIsSnazzidexOpen] = useState(false);
@@ -135,7 +136,7 @@ const FindScreen: React.FC<FindScreenProps> = ({ playerLocation, checkpoint, cap
         </div>
       )}
 
-      {isSnazzidexOpen && <Snazzidex capturedSnazzimons={capturedSnazzimons} onClose={() => setIsSnazzidexOpen(false)} />}
+      {isSnazzidexOpen && <Snazzidex capturedSnazzimons={capturedSnazzimons} onClose={() => setIsSnazzidexOpen(false)} onSnazzimonClick={onSnazzimonClick} />}
 
       {/* Device Orientation Permission Prompt */}
       {showOrientationPrompt && permissionState === 'prompt' && (
