@@ -1,14 +1,19 @@
 {
   "name": "snazzimon-go",
+  "homepage": "https://<your-github-username>.github.io/snazzimon-go",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "gh-pages": "^6.1.1",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   },
