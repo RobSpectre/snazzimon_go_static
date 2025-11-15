@@ -5,12 +5,12 @@
       "name": "Raveesonic",
       "image": "/images/raveesonic.png",
       "video": {
-        "intro": "/video/01_intro.mp4",
-        "reveal": "/video/01_reveal.mp4",
-        "idle": "/video/01_idle_loop.mp4",
-        "success": "/video/01_success.mp4",
-        "fail": "/video/01_failure.mp4",
-        "outro": "/video/01_outro.mp4"
+        "intro": "/video/01_intro_low.mp4",
+        "reveal": "/video/01_reveal_low.mp4",
+        "idle": "/video/01_idle_loop_low.mp4",
+        "success": "/video/01_success_low.mp4",
+        "fail": "/video/01_failure_low.mp4",
+        "outro": "/video/01_outro_low.mp4"
       }
     },
     {
@@ -18,12 +18,12 @@
       "name": "Abracodex",
       "image": "/images/abracodex.png",
       "video": {
-        "intro": "/video/02_intro.mp4",
-        "reveal": "/video/02_reveal.mp4",
-        "idle": "/video/02_idle.mp4",
-        "success": "/video/02_success.mp4",
-        "fail": "/video/02_failure.mp4",
-        "outro": "/video/02_outro.mp4"
+        "intro": "/video/02_intro_low.mp4",
+        "reveal": "/video/02_reveal_low.mp4",
+        "idle": "/video/02_idle_low.mp4",
+        "success": "/video/02_success_low.mp4",
+        "fail": "/video/02_failure_low.mp4",
+        "outro": "/video/02_outro_low.mp4"
       }
     },
     {
@@ -31,12 +31,12 @@
       "name": "Beeteljim",
       "image": "/images/beeteljim.png",
       "video": {
-        "intro": "/video/03_intro.mp4",
-        "reveal": "/video/03_reveal.mp4",
-        "idle": "/video/03_idle.mp4",
-        "success": "/video/03_success.mp4",
-        "fail": "/video/03_failure.mp4",
-        "outro": "/video/03_outro.mp4"
+        "intro": "/video/03_intro_low.mp4",
+        "reveal": "/video/03_reveal_low.mp4",
+        "idle": "/video/03_idle_low.mp4",
+        "success": "/video/03_success_low.mp4",
+        "fail": "/video/03_failure_low.mp4",
+        "outro": "/video/03_outro_low.mp4"
       }
     },
     {
@@ -44,12 +44,12 @@
       "name": "Basquiatrix",
       "image": "/images/basquiatrix.png",
       "video": {
-        "intro": "/video/04_intro.mp4",
-        "reveal": "/video/04_reveal.mp4",
-        "idle": "/video/04_idle.mp4",
-        "success": "/video/04_success.mp4",
-        "fail": "/video/04_failure.mp4",
-        "outro": "/video/04_outro.mp4"
+        "intro": "/video/04_intro_low.mp4",
+        "reveal": "/video/04_reveal_low.mp4",
+        "idle": "/video/04_idle_low.mp4",
+        "success": "/video/04_success_low.mp4",
+        "fail": "/video/04_failure_low.mp4",
+        "outro": "/video/04_outro_low.mp4"
       }
     },
     {
@@ -57,12 +57,12 @@
       "name": "Boaty McBoatface",
       "image": "/images/boaty_mcboatface.png",
       "video": {
-        "intro": "/video/05_intro.mp4",
-        "reveal": "/video/05_reveal.mp4",
-        "idle": "/video/05_idle.mp4",
-        "success": "/video/05_success.mp4",
-        "fail": "/video/05_failure.mp4",
-        "outro": "/video/05_outro.mp4"
+        "intro": "/video/05_intro_low.mp4",
+        "reveal": "/video/05_reveal_low.mp4",
+        "idle": "/video/05_idle_low.mp4",
+        "success": "/video/05_success_low.mp4",
+        "fail": "/video/05_failure_low.mp4",
+        "outro": "/video/05_outro_low.mp4"
       }
     },
     {
@@ -70,12 +70,12 @@
       "name": "Doctor Stankman",
       "image": "/images/doctor_stankman.png",
       "video": {
-        "intro": "/video/06_intro.mp4",
-        "reveal": "/video/06_reveal.mp4",
-        "idle": "/video/06_idle.mp4",
-        "success": "/video/06_success.mp4",
-        "fail": "/video/06_failure.mp4",
-        "outro": "/video/06_outro.mp4"
+        "intro": "/video/06_intro_low.mp4",
+        "reveal": "/video/06_reveal_low.mp4",
+        "idle": "/video/06_idle_low.mp4",
+        "success": "/video/06_success_low.mp4",
+        "fail": "/video/06_failure_low.mp4",
+        "outro": "/video/06_outro_low.mp4"
       }
     }
   ],
