@@ -66,7 +66,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchGameData = async () => {
       try {
-        const response = await fetch('/game-data.json');
+        const response = await fetch('/data/game-data.json');
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
