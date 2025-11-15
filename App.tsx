@@ -226,11 +226,11 @@ const App: React.FC = () => {
            );
         }
         const snazzimon = gameData.snazzimons.find(s => s.id === currentCheckpoint.snazzimonId);
-        if (!snazzimon) {
+        if (!snazzimon || !snazzimon.videos) {
             return (
                 <div className="w-full h-full bg-slate-900 text-white flex flex-col items-center justify-center p-4 text-center">
-                    <h1 className="text-3xl font-bold text-red-500">Data Mismatch!</h1>
-                    <p className="text-lg mt-2">The Snazzimon for this checkpoint could not be found.</p>
+                    <h1 className="text-3xl font-bold text-red-500">Snazzimon Data Error!</h1>
+                    <p className="text-lg mt-2">Could not load video data for this Snazzimon.</p>
                     <button onClick={() => setGameState(GameState.FIND)} className="mt-8 bg-gradient-to-b from-blue-400 to-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg border-2 border-blue-200 hover:from-blue-300 transition-transform transform hover:scale-105">
                         Return to Map
                     </button>
