@@ -100,7 +100,6 @@ const CaptureScreen: React.FC<CaptureScreenProps> = ({ snazzimon, successProbabi
             playsInline
             webkit-playsinline="true"
             preload="auto"
-            muted
             autoPlay
             loop={captureState === 'idle' || captureState === 'throwing'}
         >
