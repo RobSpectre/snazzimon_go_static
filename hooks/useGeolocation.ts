@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import type { Coordinates } from '../types';
 
@@ -16,19 +15,32 @@ export const useGeolocation = () => {
       return;
     }
 
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    };
+
     navigator.geolocation.getCurrentPosition(
-      () => {
-        // We don't need the position here, just the permission grant
-        // The watchPosition will handle updates
+      (position) => {
+        // On success, we have permission. Update state and location.
+        setPermissionState('granted');
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        setError(null);
       },
       (err) => {
         if (err.code === err.PERMISSION_DENIED) {
-          setError("Geolocation permission denied.");
+          setError("Geolocation permission denied. Please enable it in your browser or system settings.");
           setPermissionState('denied');
         } else {
-          setError("Error getting location.");
+          // Handle other errors like TIMEOUT or POSITION_UNAVAILABLE
+          setError("Could not get location. Make sure your GPS is enabled.");
         }
-      }
+      },
+      options
     );
   }, []);
 
@@ -53,7 +65,12 @@ export const useGeolocation = () => {
           setError(null);
         },
         (err) => {
-          setError("Error watching position.");
+           if (err.code === err.PERMISSION_DENIED) {
+            setError("Location permission was revoked.");
+            setPermissionState('denied');
+          } else {
+            setError("Error watching position. GPS signal may be lost.");
+          }
         },
         {
           enableHighAccuracy: true,

@@ -60,7 +60,10 @@ const CaptureScreen: React.FC<CaptureScreenProps> = ({ snazzimon, successProbabi
     }, 1200); // 1.2s for the ball throw animation
   };
   
-  const currentVideoSrc = snazzimon.videos[captureState as keyof typeof snazzimon.videos];
+  // 'throwing' is a visual animation state, not a video state.
+  // We keep the 'idle' video playing during the throw.
+  const videoState = captureState === 'throwing' ? 'idle' : captureState;
+  const currentVideoSrc = snazzimon.videos[videoState as keyof typeof snazzimon.videos];
 
   return (
     <div 
@@ -80,13 +83,13 @@ const CaptureScreen: React.FC<CaptureScreenProps> = ({ snazzimon, successProbabi
       
         <video
             ref={videoRef}
-            key={captureState}
+            key={videoState}
             className="absolute top-0 left-0 w-full h-full object-cover z-0"
             src={currentVideoSrc}
             onEnded={handleVideoEnd}
             playsInline
             muted // Muted is often required for autoplay on mobile
-            loop={captureState === 'idle'}
+            loop={captureState === 'idle' || captureState === 'throwing'}
         >
             Your browser does not support the video tag.
         </video>

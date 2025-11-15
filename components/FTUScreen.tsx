@@ -5,9 +5,10 @@ interface FTUScreenProps {
   onComplete: () => void;
   requestPermission: () => void;
   permissionState: 'prompt' | 'granted' | 'denied';
+  geoError: string | null;
 }
 
-const FTUScreen: React.FC<FTUScreenProps> = ({ onComplete, requestPermission, permissionState }) => {
+const FTUScreen: React.FC<FTUScreenProps> = ({ onComplete, requestPermission, permissionState, geoError }) => {
   const [step, setStep] = useState(0);
 
   const handleNext = () => setStep((s) => s + 1);
@@ -50,7 +51,9 @@ const FTUScreen: React.FC<FTUScreenProps> = ({ onComplete, requestPermission, pe
       {permissionState === 'denied' && (
         <>
           <h1 className="text-4xl font-bold mb-4 text-red-500 [text-shadow:0_4px_8px_rgba(0,0,0,0.5)]">Permission Denied</h1>
-          <p className="text-xl max-w-md my-8">Location access is required to play. Please enable it in your browser settings and refresh the page to start your adventure.</p>
+          <p className="text-xl max-w-md my-8">
+            {geoError || "Location access is required to play. Please enable it in your browser settings and refresh the page to start your adventure."}
+          </p>
         </>
       )}
       {permissionState === 'prompt' && (

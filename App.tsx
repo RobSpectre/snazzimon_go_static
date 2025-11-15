@@ -13,10 +13,45 @@ interface GameData {
   checkpoints: Checkpoint[];
 }
 
+interface SavedProgress {
+  gameState: GameState;
+  currentCheckpointIndex: number;
+  capturedSnazzimons: SnazzimonData[];
+}
+
+// Helper function to load progress from localStorage
+const loadProgress = (): SavedProgress => {
+  try {
+    const savedData = localStorage.getItem('snazzimon-go-progress');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      // If we have progress, the user has completed FTU, so start at FIND state
+      // unless they've finished the game
+      const isGameOver = parsed.currentCheckpointIndex && parsed.checkpoints && parsed.currentCheckpointIndex >= parsed.checkpoints.length;
+      
+      return {
+        gameState: isGameOver ? GameState.GAME_OVER : GameState.FIND,
+        currentCheckpointIndex: parsed.currentCheckpointIndex || 0,
+        capturedSnazzimons: parsed.capturedSnazzimons || [],
+      };
+    }
+  } catch (error) {
+    console.error("Failed to load progress from localStorage:", error);
+  }
+  // Default state for first-time players
+  return {
+    gameState: GameState.FTU,
+    currentCheckpointIndex: 0,
+    capturedSnazzimons: [],
+  };
+};
+
+
 const App: React.FC = () => {
-  const [gameState, setGameState] = useState<GameState>(GameState.FTU);
-  const [capturedSnazzimons, setCapturedSnazzimons] = useState<SnazzimonData[]>([]);
-  const [currentCheckpointIndex, setCurrentCheckpointIndex] = useState(0);
+  const [initialState, setInitialState] = useState(loadProgress);
+  const [gameState, setGameState] = useState<GameState>(initialState.gameState);
+  const [capturedSnazzimons, setCapturedSnazzimons] = useState<SnazzimonData[]>(initialState.capturedSnazzimons);
+  const [currentCheckpointIndex, setCurrentCheckpointIndex] = useState<number>(initialState.currentCheckpointIndex);
   
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,8 +60,9 @@ const App: React.FC = () => {
   const [isCapturePossible, setIsCapturePossible] = useState(false);
   const [isEncounterTriggered, setIsEncounterTriggered] = useState(false);
 
-  const { location, permissionState, requestPermission } = useGeolocation();
+  const { location, error: geoError, permissionState, requestPermission } = useGeolocation();
   
+  // Fetch game configuration data on mount
   useEffect(() => {
     const fetchGameData = async () => {
       try {
@@ -36,6 +72,12 @@ const App: React.FC = () => {
         }
         const data: GameData = await response.json();
         setGameData(data);
+
+        // Re-evaluate game over state after fetching game data
+        if (initialState.gameState !== GameState.FTU && initialState.currentCheckpointIndex >= data.checkpoints.length) {
+            setGameState(GameState.GAME_OVER);
+        }
+
       } catch (e: any) {
         console.error("Failed to load game data:", e);
         setError(e.message || "Could not load game data. Please try refreshing the page.");
@@ -44,11 +86,38 @@ const App: React.FC = () => {
       }
     };
     fetchGameData();
-  }, []);
+  }, [initialState]);
+  
+  // Save progress to localStorage whenever it changes
+  useEffect(() => {
+    // Don't save initial FTU state until the user has passed it.
+    if (gameState === GameState.FTU) return;
+    
+    try {
+        const progress = {
+            currentCheckpointIndex,
+            capturedSnazzimons,
+            checkpoints: gameData?.checkpoints, // Save checkpoints to check for game over on load
+        };
+        localStorage.setItem('snazzimon-go-progress', JSON.stringify(progress));
+    } catch (error) {
+        console.error("Failed to save progress:", error);
+    }
+  }, [currentCheckpointIndex, capturedSnazzimons, gameState, gameData]);
+
+  // Check for game over state once game data is loaded
+  useEffect(() => {
+    if (gameData && gameState !== GameState.FTU) {
+        if (currentCheckpointIndex >= gameData.checkpoints.length) {
+            setGameState(GameState.GAME_OVER);
+        }
+    }
+  }, [gameData, currentCheckpointIndex, gameState]);
 
   const currentCheckpoint = gameData?.checkpoints[currentCheckpointIndex];
   const { distance } = useHaversine(location, currentCheckpoint?.coordinates);
 
+  // Handle encounter trigger logic
   useEffect(() => {
     if (gameState === GameState.FIND && distance !== null && currentCheckpoint) {
       if (distance < currentCheckpoint.captureThreshold && !isEncounterTriggered) {
@@ -76,7 +145,7 @@ const App: React.FC = () => {
     if (!gameData || !currentCheckpoint) return;
     
     const snazzimon = gameData.snazzimons.find(s => s.id === currentCheckpoint.snazzimonId);
-    if (snazzimon) {
+    if (snazzimon && !capturedSnazzimons.some(s => s.id === snazzimon.id)) {
       setCapturedSnazzimons(prev => [...prev, snazzimon]);
     }
     
@@ -88,6 +157,8 @@ const App: React.FC = () => {
       setIsCapturePossible(false);
       setIsEncounterTriggered(false);
     } else {
+      // Set index past the end to signify completion
+      setCurrentCheckpointIndex(nextIndex);
       setGameState(GameState.GAME_OVER);
     }
   };
@@ -123,13 +194,14 @@ const App: React.FC = () => {
   const renderGameState = () => {
     switch (gameState) {
       case GameState.FTU:
-        return <FTUScreen onComplete={handleFTUComplete} requestPermission={requestPermission} permissionState={permissionState} />;
+        return <FTUScreen onComplete={handleFTUComplete} requestPermission={requestPermission} permissionState={permissionState} geoError={geoError} />;
       
       case GameState.FIND:
         if (!currentCheckpoint) return (
-            <div className="w-full h-full bg-gray-900 text-white flex items-center justify-center">
-                Loading checkpoint...
-            </div>
+             <div className="w-full h-full bg-slate-900 text-white flex flex-col items-center justify-center p-4 text-center">
+                 <h1 className="text-3xl font-bold text-yellow-300">Something's not right...</h1>
+                 <p className="text-lg mt-2">Could not find the next checkpoint.</p>
+             </div>
         );
         return (
           <FindScreen
