@@ -213,8 +213,30 @@ const App: React.FC = () => {
         );
 
       case GameState.CAPTURE:
+        // Add robust guards to prevent crashes from race conditions or bad data
+        if (!currentCheckpoint) {
+            return (
+                <div className="w-full h-full bg-slate-900 text-white flex flex-col items-center justify-center p-4 text-center">
+                    <h1 className="text-3xl font-bold text-red-500">Encounter Error!</h1>
+                    <p className="text-lg mt-2">Could not find the encounter data.</p>
+                    <button onClick={() => setGameState(GameState.FIND)} className="mt-8 bg-gradient-to-b from-blue-400 to-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg border-2 border-blue-200 hover:from-blue-300 transition-transform transform hover:scale-105">
+                        Return to Map
+                    </button>
+                </div>
+           );
+        }
         const snazzimon = gameData.snazzimons.find(s => s.id === currentCheckpoint.snazzimonId);
-        if (!snazzimon) return <div>Error: Snazzimon not found!</div>;
+        if (!snazzimon) {
+            return (
+                <div className="w-full h-full bg-slate-900 text-white flex flex-col items-center justify-center p-4 text-center">
+                    <h1 className="text-3xl font-bold text-red-500">Data Mismatch!</h1>
+                    <p className="text-lg mt-2">The Snazzimon for this checkpoint could not be found.</p>
+                    <button onClick={() => setGameState(GameState.FIND)} className="mt-8 bg-gradient-to-b from-blue-400 to-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg border-2 border-blue-200 hover:from-blue-300 transition-transform transform hover:scale-105">
+                        Return to Map
+                    </button>
+                </div>
+            );
+        }
         return (
           <CaptureScreen 
             snazzimon={snazzimon} 
