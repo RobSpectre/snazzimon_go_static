@@ -13,6 +13,7 @@ type CaptureState = 'intro' | 'reveal' | 'idle' | 'throwing' | 'fail' | 'success
 const CaptureScreen: React.FC<CaptureScreenProps> = ({ snazzimon, successProbability, onCapture }) => {
   const [captureState, setCaptureState] = useState<CaptureState>('intro');
   const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [needsUserInteraction, setNeedsUserInteraction] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleVideoEnd = () => {
@@ -23,13 +24,22 @@ const CaptureScreen: React.FC<CaptureScreenProps> = ({ snazzimon, successProbabi
     else if (captureState === 'outro') onCapture();
   };
 
-  useEffect(() => {
+  const playVideo = async () => {
     const video = videoRef.current;
     if (video) {
-        // When the state (and thus src) changes, load and play the new video
+      try {
         video.load();
-        video.play().catch(error => console.error("Video autoplay failed:", error));
+        await video.play();
+        setNeedsUserInteraction(false);
+      } catch (error) {
+        console.error("Video autoplay failed:", error);
+        setNeedsUserInteraction(true);
+      }
     }
+  };
+
+  useEffect(() => {
+    playVideo();
   }, [captureState]);
   
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -63,7 +73,7 @@ const CaptureScreen: React.FC<CaptureScreenProps> = ({ snazzimon, successProbabi
   // 'throwing' is a visual animation state, not a video state.
   // We keep the 'idle' video playing during the throw.
   const videoState = captureState === 'throwing' ? 'idle' : captureState;
-  const currentVideoSrc = snazzimon.videos[videoState as keyof typeof snazzimon.videos];
+  const currentVideoSrc = snazzimon.video[videoState as keyof typeof snazzimon.video];
 
   return (
     <div 
@@ -88,11 +98,28 @@ const CaptureScreen: React.FC<CaptureScreenProps> = ({ snazzimon, successProbabi
             src={currentVideoSrc}
             onEnded={handleVideoEnd}
             playsInline
-            muted // Muted is often required for autoplay on mobile
+            webkit-playsinline="true"
+            preload="auto"
+            muted
+            autoPlay
             loop={captureState === 'idle' || captureState === 'throwing'}
         >
             Your browser does not support the video tag.
         </video>
+
+      {needsUserInteraction && (
+          <div
+              className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 cursor-pointer"
+              onClick={playVideo}
+          >
+              <div className="bg-yellow-400 text-black rounded-full p-6 mb-4">
+                  <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                  </svg>
+              </div>
+              <p className="text-2xl font-bold text-yellow-300">Tap to Play</p>
+          </div>
+      )}
 
       {captureState === 'idle' && (
           <div className="absolute bottom-10 flex flex-col items-center z-10">

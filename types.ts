@@ -8,7 +8,7 @@ export interface SnazzimonData {
   id: number;
   name: string;
   image: string;
-  videos: {
+  video: {
     intro: string;
     reveal: string;
     idle: string;

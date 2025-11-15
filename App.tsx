@@ -226,7 +226,7 @@ const App: React.FC = () => {
            );
         }
         const snazzimon = gameData.snazzimons.find(s => s.id === currentCheckpoint.snazzimonId);
-        if (!snazzimon || !snazzimon.videos) {
+        if (!snazzimon || !snazzimon.video) {
             return (
                 <div className="w-full h-full bg-slate-900 text-white flex flex-col items-center justify-center p-4 text-center">
                     <h1 className="text-3xl font-bold text-red-500">Snazzimon Data Error!</h1>
