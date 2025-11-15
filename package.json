@@ -1,12 +1,12 @@
 {
   "name": "snazzimon-go",
-  "homepage": "https://<your-github-username>.github.io/snazzimon-go",
+  "homepage": "https://snazzimongo.com",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && echo 'snazzimongo.com' > dist/CNAME",
     "deploy": "gh-pages -d dist"
   },
   "devDependencies": {

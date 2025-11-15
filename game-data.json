@@ -2,71 +2,137 @@
   "snazzimons": [
     {
       "id": 1,
-      "name": "Sparkle Feline",
-      "image": "/images/sparkle-feline.png",
-      "videos": {
-        "intro": "/videos/sparkle-feline-intro.mp4",
-        "reveal": "/videos/sparkle-feline-reveal.mp4",
-        "idle": "/videos/sparkle-feline-idle.mp4",
-        "success": "/videos/sparkle-feline-success.mp4",
-        "fail": "/videos/sparkle-feline-fail.mp4",
-        "outro": "/videos/sparkle-feline-outro.mp4"
+      "name": "Raveesonic",
+      "image": "/images/raveesonic.png",
+      "video": {
+        "intro": "/video/01_intro.mp4",
+        "reveal": "/video/01_reveal.mp4",
+        "idle": "/video/01_idle_loop.mp4",
+        "success": "/video/01_success.mp4",
+        "fail": "/video/01_failure.mp4",
+        "outro": "/video/01_outro.mp4"
       }
     },
     {
       "id": 2,
-      "name": "Aqua Serpent",
-      "image": "/images/aqua-serpent.png",
-      "videos": {
-        "intro": "/videos/aqua-serpent-intro.mp4",
-        "reveal": "/videos/aqua-serpent-reveal.mp4",
-        "idle": "/videos/aqua-serpent-idle.mp4",
-        "success": "/videos/aqua-serpent-success.mp4",
-        "fail": "/videos/aqua-serpent-fail.mp4",
-        "outro": "/videos/aqua-serpent-outro.mp4"
+      "name": "Abracodex",
+      "image": "/images/abracodex.png",
+      "video": {
+        "intro": "/video/02_intro.mp4",
+        "reveal": "/video/02_reveal.mp4",
+        "idle": "/video/02_idle.mp4",
+        "success": "/video/02_success.mp4",
+        "fail": "/video/02_failure.mp4",
+        "outro": "/video/02_outro.mp4"
       }
     },
     {
       "id": 3,
-      "name": "Terra Tortoise",
-      "image": "/images/terra-tortoise.png",
-      "videos": {
-        "intro": "/videos/terra-tortoise-intro.mp4",
-        "reveal": "/videos/terra-tortoise-reveal.mp4",
-        "idle": "/videos/terra-tortoise-idle.mp4",
-        "success": "/videos/terra-tortoise-success.mp4",
-        "fail": "/videos/terra-tortoise-fail.mp4",
-        "outro": "/videos/terra-tortoise-outro.mp4"
+      "name": "Beeteljim",
+      "image": "/images/beeteljim.png",
+      "video": {
+        "intro": "/video/03_intro.mp4",
+        "reveal": "/video/03_reveal.mp4",
+        "idle": "/video/03_idle.mp4",
+        "success": "/video/03_success.mp4",
+        "fail": "/video/03_failure.mp4",
+        "outro": "/video/03_outro.mp4"
+      }
+    },
+    {
+      "id": 4,
+      "name": "Basquiatrix",
+      "image": "/images/basquiatrix.png",
+      "video": {
+        "intro": "/video/04_intro.mp4",
+        "reveal": "/video/04_reveal.mp4",
+        "idle": "/video/04_idle.mp4",
+        "success": "/video/04_success.mp4",
+        "fail": "/video/04_failure.mp4",
+        "outro": "/video/04_outro.mp4"
+      }
+    },
+    {
+      "id": 5,
+      "name": "Boaty McBoatface",
+      "image": "/images/boaty_mcboatface.png",
+      "video": {
+        "intro": "/video/05_intro.mp4",
+        "reveal": "/video/05_reveal.mp4",
+        "idle": "/video/05_idle.mp4",
+        "success": "/video/05_success.mp4",
+        "fail": "/video/05_failure.mp4",
+        "outro": "/video/05_outro.mp4"
+      }
+    },
+    {
+      "id": 6,
+      "name": "Doctor Stankman",
+      "image": "/images/doctor_stankman.png",
+      "video": {
+        "intro": "/video/06_intro.mp4",
+        "reveal": "/video/06_reveal.mp4",
+        "idle": "/video/06_idle.mp4",
+        "success": "/video/06_success.mp4",
+        "fail": "/video/06_failure.mp4",
+        "outro": "/video/06_outro.mp4"
       }
     }
   ],
   "checkpoints": [
     {
       "id": 1,
-      "coordinates": { "latitude": 37.7792, "longitude": -122.4194 },
+      "coordinates": { "latitude": 40.72033004287081, "longitude": -73.99339870663515 },
       "snazzimonId": 1,
-      "captureThreshold": 20,
-      "successProbability": 0.7,
-      "hints": ["Look for a grand building with a large dome.", "It's a hub of civic activity."],
+      "captureThreshold": 10,
+      "successProbability": 1,
+      "hints": ["The greatest venue in New York", "It is a fine room to Rave in.", "Corner of Delancey and Bowery - middle of the block."],
       "hintCooldown": 1
     },
     {
       "id": 2,
-      "coordinates": { "latitude": 37.7786, "longitude": -122.4161 },
+      "coordinates": { "latitude": 40.720481527458055, "longitude": -73.9871210840733 },
       "snazzimonId": 2,
-      "captureThreshold": 25,
-      "successProbability": 0.5,
-      "hints": ["Find a place where big concerts and events happen.", "It's across the plaza from the dome."],
-      "hintCooldown": 2
+      "captureThreshold": 10,
+      "successProbability": 0.9,
+      "hints": ["A mysterious speakeasy on the LES where magic occurs.", "The spot where you got to meet my old work crew.", "Right in front of Beauty & Essex"],
+      "hintCooldown": 1
     },
     {
       "id": 3,
-      "coordinates": { "latitude": 37.7765, "longitude": -122.4173 },
+      "coordinates": { "latitude": 40.72711840623888, "longitude": -73.98798821651266},
       "snazzimonId": 3,
-      "captureThreshold": 15,
-      "successProbability": 0.3,
-      "hints": ["It's near a major street and a recently rebranded tech company.", "You might see a bird... or an X."],
-      "hintCooldown": 2
+      "captureThreshold": 10,
+      "successProbability": 0.8,
+      "hints": ["The matrie d is strange and unusual.", "The host with the most took a selfie with us.", "6th and 2nd - a third of the way east on the right."],
+      "hintCooldown": 1
+    },
+    {
+      "id": 4,
+      "coordinates": { "latitude": 40.75357507548954, "longitude": -74.00272591459708 },
+      "snazzimonId": 4,
+      "captureThreshold": 10,
+      "successProbability": 0.7,
+      "hints": ["This shed is next to a vessel holding an art show almost lost to history.", "We kinda got married there.", "Hudson Yards, next to the Vessel."],
+      "hintCooldown": 1
+    },
+    {
+      "id": 5,
+      "coordinates": { "latitude": 40.71346340158001, "longitude": -74.0162329794055 },
+      "snazzimonId": 5,
+      "captureThreshold": 10,
+      "successProbability": 0.6,
+      "hints": ["An excellent spot for a picnic with a yachtastic view.", "You can find it on the Hudson River behind the mall by Battery Park", "Behind Brookfield Place."],
+      "hintCooldown": 1
+    },
+    {
+      "id": 6,
+      "coordinates": { "latitude": 40.71973290431601, "longitude": -74.00658751802162 },
+      "snazzimonId": 6,
+      "captureThreshold": 10,
+      "successProbability": 0.5,
+      "hints": ["A spooky spot by where it all began.", "The headquarters for a certain paranormal elimination team.", "Who you gonna call?"],
+      "hintCooldown": 1
     }
   ]
 }
