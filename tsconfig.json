@@ -10,8 +10,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "types": ["react/next", "react-dom/next"]
+    "noEmit": true
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }

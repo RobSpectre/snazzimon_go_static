@@ -115,7 +115,7 @@ const App: React.FC = () => {
   }, [gameData, currentCheckpointIndex, gameState]);
 
   const currentCheckpoint = gameData?.checkpoints[currentCheckpointIndex];
-  const { distance } = useHaversine(location, currentCheckpoint?.coordinates);
+  const { distance } = useHaversine(location, currentCheckpoint?.coordinates ?? null);
 
   // Handle encounter trigger logic
   useEffect(() => {
