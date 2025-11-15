@@ -1,0 +1,7 @@
+{
+  "name": "Snazzimon Go",
+  "description": "A geolocation-based scavenger hunt game where you find and capture amazing Snazzimons in the real world!",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

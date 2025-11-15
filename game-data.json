@@ -1,0 +1,72 @@
+{
+  "snazzimons": [
+    {
+      "id": 1,
+      "name": "Sparkle Feline",
+      "image": "/images/sparkle-feline.png",
+      "videos": {
+        "intro": "/videos/sparkle-feline-intro.mp4",
+        "reveal": "/videos/sparkle-feline-reveal.mp4",
+        "idle": "/videos/sparkle-feline-idle.mp4",
+        "success": "/videos/sparkle-feline-success.mp4",
+        "fail": "/videos/sparkle-feline-fail.mp4",
+        "outro": "/videos/sparkle-feline-outro.mp4"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Aqua Serpent",
+      "image": "/images/aqua-serpent.png",
+      "videos": {
+        "intro": "/videos/aqua-serpent-intro.mp4",
+        "reveal": "/videos/aqua-serpent-reveal.mp4",
+        "idle": "/videos/aqua-serpent-idle.mp4",
+        "success": "/videos/aqua-serpent-success.mp4",
+        "fail": "/videos/aqua-serpent-fail.mp4",
+        "outro": "/videos/aqua-serpent-outro.mp4"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Terra Tortoise",
+      "image": "/images/terra-tortoise.png",
+      "videos": {
+        "intro": "/videos/terra-tortoise-intro.mp4",
+        "reveal": "/videos/terra-tortoise-reveal.mp4",
+        "idle": "/videos/terra-tortoise-idle.mp4",
+        "success": "/videos/terra-tortoise-success.mp4",
+        "fail": "/videos/terra-tortoise-fail.mp4",
+        "outro": "/videos/terra-tortoise-outro.mp4"
+      }
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": 1,
+      "coordinates": { "latitude": 37.7792, "longitude": -122.4194 },
+      "snazzimonId": 1,
+      "captureThreshold": 20,
+      "successProbability": 0.7,
+      "hints": ["Look for a grand building with a large dome.", "It's a hub of civic activity."],
+      "hintCooldown": 1
+    },
+    {
+      "id": 2,
+      "coordinates": { "latitude": 37.7786, "longitude": -122.4161 },
+      "snazzimonId": 2,
+      "captureThreshold": 25,
+      "successProbability": 0.5,
+      "hints": ["Find a place where big concerts and events happen.", "It's across the plaza from the dome."],
+      "hintCooldown": 2
+    },
+    {
+      "id": 3,
+      "coordinates": { "latitude": 37.7765, "longitude": -122.4173 },
+      "snazzimonId": 3,
+      "captureThreshold": 15,
+      "successProbability": 0.3,
+      "hints": ["It's near a major street and a recently rebranded tech company.", "You might see a bird... or an X."],
+      "hintCooldown": 2
+    }
+  ]
+}
