@@ -29,10 +29,10 @@ const FTUScreen: React.FC<FTUScreenProps> = ({ onComplete, requestPermission, pe
 
     // Step 1: Permission Request
     <div key={1} className="text-center flex flex-col items-center">
-      <h1 className="text-4xl font-bold mb-4 text-blue-300 [text-shadow:0_4px_8px_rgba(0,0,0,0.5)]">Location Access</h1>
-      <p className="text-xl max-w-md my-8">To find Snazzimons hiding in the world, the game needs to know your location. Please grant access when prompted.</p>
+      <h1 className="text-4xl font-bold mb-4 text-blue-300 [text-shadow:0_4px_8px_rgba(0,0,0,0.5)]">Permission Needed</h1>
+      <p className="text-xl max-w-md my-8">To find Snazzimons in the world around you, the game needs access to your device's <strong className="text-blue-200">Location</strong>. Please grant access when prompted.</p>
       <button onClick={handlePermission} className="mt-8 bg-gradient-to-b from-blue-400 to-blue-600 text-white font-bold py-4 px-10 rounded-full text-2xl shadow-lg border-2 border-blue-200 hover:from-blue-300 transition-transform transform hover:scale-105">
-        Allow Geolocation
+        Allow Access
       </button>
     </div>,
 

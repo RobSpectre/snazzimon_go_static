@@ -21,6 +21,9 @@ const App: React.FC = () => {
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const [isCapturePossible, setIsCapturePossible] = useState(false);
+  const [isEncounterTriggered, setIsEncounterTriggered] = useState(false);
 
   const { location, permissionState, requestPermission } = useGeolocation();
   
@@ -47,10 +50,23 @@ const App: React.FC = () => {
   const { distance } = useHaversine(location, currentCheckpoint?.coordinates);
 
   useEffect(() => {
-    if (gameState === GameState.FIND && distance !== null && currentCheckpoint && distance < currentCheckpoint.captureThreshold) {
-      setGameState(GameState.CAPTURE);
+    if (gameState === GameState.FIND && distance !== null && currentCheckpoint) {
+      if (distance < currentCheckpoint.captureThreshold && !isEncounterTriggered) {
+        setIsEncounterTriggered(true);
+        setIsCapturePossible(true);
+
+        // Vibrate to signal an encounter
+        if (navigator.vibrate) {
+          navigator.vibrate([200, 100, 200]);
+        }
+        
+        // Automatically transition to capture screen after a delay
+        setTimeout(() => {
+          setGameState(GameState.CAPTURE);
+        }, 2500); // 2.5s for the alert animation
+      }
     }
-  }, [distance, gameState, currentCheckpoint]);
+  }, [distance, gameState, currentCheckpoint, isEncounterTriggered]);
 
   const handleFTUComplete = () => {
     setGameState(GameState.FIND);
@@ -68,6 +84,9 @@ const App: React.FC = () => {
     if (nextIndex < gameData.checkpoints.length) {
       setCurrentCheckpointIndex(nextIndex);
       setGameState(GameState.FIND);
+      // Reset encounter states for the next checkpoint
+      setIsCapturePossible(false);
+      setIsEncounterTriggered(false);
     } else {
       setGameState(GameState.GAME_OVER);
     }
@@ -117,6 +136,7 @@ const App: React.FC = () => {
             playerLocation={location}
             checkpoint={currentCheckpoint}
             capturedSnazzimons={capturedSnazzimons}
+            isCapturePossible={isCapturePossible}
           />
         );
 
