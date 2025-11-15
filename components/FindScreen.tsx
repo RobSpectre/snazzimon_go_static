@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Coordinates, Checkpoint, SnazzimonData } from '../types';
 import { useHaversine } from '../hooks/useHaversine';
+import { useDeviceOrientation } from '../hooks/useDeviceOrientation';
 import Compass from './Compass';
 import Snazzidex from './Snazzidex';
 import { SnazziBallIcon } from './icons';
@@ -14,12 +15,25 @@ interface FindScreenProps {
 
 const FindScreen: React.FC<FindScreenProps> = ({ playerLocation, checkpoint, capturedSnazzimons, isCapturePossible }) => {
   const { distance, bearing } = useHaversine(playerLocation, checkpoint.coordinates);
+  const { heading, permissionState, isSupported, requestPermission } = useDeviceOrientation();
   const [isSnazzidexOpen, setIsSnazzidexOpen] = useState(false);
   const [revealedHints, setRevealedHints] = useState<string[]>([]);
   const [lastHintTime, setLastHintTime] = useState<number | null>(null);
   const [canShowHint, setCanShowHint] = useState(true);
+  const [showOrientationPrompt, setShowOrientationPrompt] = useState(false);
 
   const cooldownMillis = checkpoint.hintCooldown * 60 * 1000;
+
+  // Request device orientation permission on mount (for iOS)
+  useEffect(() => {
+    if (isSupported && permissionState === 'prompt') {
+      // Show prompt after a short delay for better UX
+      const timer = setTimeout(() => {
+        setShowOrientationPrompt(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSupported, permissionState]);
 
   useEffect(() => {
     if (lastHintTime === null) {
@@ -61,7 +75,7 @@ const FindScreen: React.FC<FindScreenProps> = ({ playerLocation, checkpoint, cap
               {distance !== null ? `${distance.toFixed(0)}m` : '---'}
               </div>
           </div>
-          <Compass bearing={bearing} />
+          <Compass bearing={bearing} deviceHeading={heading} />
         </div>
         
         {/* Middle Section: Hints */}
@@ -122,6 +136,34 @@ const FindScreen: React.FC<FindScreenProps> = ({ playerLocation, checkpoint, cap
       )}
 
       {isSnazzidexOpen && <Snazzidex capturedSnazzimons={capturedSnazzimons} onClose={() => setIsSnazzidexOpen(false)} />}
+
+      {/* Device Orientation Permission Prompt */}
+      {showOrientationPrompt && permissionState === 'prompt' && (
+        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/80 text-center p-6">
+          <div className="bg-slate-800/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-cyan-500/50 max-w-sm">
+            <div className="text-6xl mb-4">🧭</div>
+            <h2 className="text-2xl font-bold text-cyan-300 mb-4">Enable AR Compass</h2>
+            <p className="text-lg mb-6 text-gray-300">
+              Point your phone to see the direction to the Snazzimon in real-time!
+            </p>
+            <button
+              onClick={() => {
+                requestPermission();
+                setShowOrientationPrompt(false);
+              }}
+              className="w-full bg-gradient-to-b from-cyan-400 to-cyan-600 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg border-2 border-cyan-200 hover:from-cyan-300 transition-transform transform hover:scale-105 mb-3"
+            >
+              Enable Compass
+            </button>
+            <button
+              onClick={() => setShowOrientationPrompt(false)}
+              className="text-gray-400 hover:text-gray-200 transition-colors"
+            >
+              Maybe Later
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

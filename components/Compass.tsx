@@ -1,10 +1,34 @@
 import React from 'react';
 
 interface CompassProps {
-  bearing: number | null;
+  bearing: number | null; // Absolute bearing to checkpoint (0-360)
+  deviceHeading: number | null; // Device's compass heading (0-360)
 }
 
-const Compass: React.FC<CompassProps> = ({ bearing }) => {
+const Compass: React.FC<CompassProps> = ({ bearing, deviceHeading }) => {
+  // Calculate relative bearing (where the checkpoint is relative to where device is pointing)
+  // When device is pointing at the checkpoint, relative bearing should be 0 (pointing up)
+  const getRelativeBearing = (): number => {
+    if (bearing === null || deviceHeading === null) {
+      return bearing ?? 0; // Fallback to absolute bearing if no device heading
+    }
+
+    // Calculate the difference
+    let relative = bearing - deviceHeading;
+
+    // Normalize to -180 to 180 range
+    while (relative > 180) relative -= 360;
+    while (relative < -180) relative += 360;
+
+    return relative;
+  };
+
+  const relativeBearing = getRelativeBearing();
+  const hasDeviceHeading = deviceHeading !== null;
+
+  // Rotate compass rose to show current device heading
+  const compassRoseRotation = hasDeviceHeading ? -deviceHeading : 0;
+
   return (
     <div className="relative w-64 h-64 flex items-center justify-center">
         <style>{`
@@ -14,14 +38,17 @@ const Compass: React.FC<CompassProps> = ({ bearing }) => {
             .animate-spin-medium { animation: spin-reverse 25s linear infinite; }
             @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px 5px #06b6d4; } 50% { box-shadow: 0 0 30px 10px #06b6d4; } }
         `}</style>
-        
+
       {/* Outer rings */}
       <div className="absolute w-full h-full border-2 border-cyan-500/30 rounded-full animate-spin-slow"></div>
       <div className="absolute w-[85%] h-[85%] border-2 border-cyan-500/40 rounded-full animate-spin-medium"></div>
       <div className="absolute w-[70%] h-[70%] bg-gray-900/50 rounded-full border-2 border-cyan-500/60"></div>
-      
-      {/* Directional markers */}
-      <div className="absolute w-full h-full">
+
+      {/* Directional markers - rotate with device heading */}
+      <div
+        className={`absolute w-full h-full ${hasDeviceHeading ? 'transition-transform duration-300 ease-out' : ''}`}
+        style={{ transform: `rotate(${compassRoseRotation}deg)` }}
+      >
         {['N', 'E', 'S', 'W'].map((dir, i) => (
           <div
             key={dir}
@@ -29,7 +56,9 @@ const Compass: React.FC<CompassProps> = ({ bearing }) => {
             style={{ transform: `rotate(${i * 90}deg)`}}
           >
             <span
-              className="absolute top-1 left-1/2 -translate-x-1/2 text-cyan-300 font-bold text-2xl"
+              className={`absolute top-1 left-1/2 -translate-x-1/2 font-bold text-2xl ${
+                dir === 'N' ? 'text-yellow-300 text-3xl' : 'text-cyan-300'
+              }`}
             >
               {dir}
             </span>
@@ -37,10 +66,10 @@ const Compass: React.FC<CompassProps> = ({ bearing }) => {
         ))}
       </div>
 
-      {/* Needle */}
+      {/* Needle - points to checkpoint relative to device orientation */}
       <div
-        className="transition-transform duration-500 ease-in-out absolute w-full h-full"
-        style={{ transform: `rotate(${bearing ?? 0}deg)` }}
+        className="transition-transform duration-300 ease-out absolute w-full h-full"
+        style={{ transform: `rotate(${relativeBearing}deg)` }}
       >
         <svg width="100%" height="100%" viewBox="0 0 256 256" className="drop-shadow-[0_0_10px_#ef4444]">
           <polygon points="128,10 160,128 128,110 96,128" className="fill-red-500" />
