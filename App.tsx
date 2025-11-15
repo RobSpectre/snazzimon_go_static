@@ -52,15 +52,52 @@ const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(initialState.gameState);
   const [capturedSnazzimons, setCapturedSnazzimons] = useState<SnazzimonData[]>(initialState.capturedSnazzimons);
   const [currentCheckpointIndex, setCurrentCheckpointIndex] = useState<number>(initialState.currentCheckpointIndex);
-  
+
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [isCapturePossible, setIsCapturePossible] = useState(false);
   const [isEncounterTriggered, setIsEncounterTriggered] = useState(false);
 
   const { location, error: geoError, permissionState, requestPermission } = useGeolocation();
+
+  // Parse URL for checkpoint ID (e.g., /#/id/1 or /id/1)
+  useEffect(() => {
+    const parseCheckpointFromURL = () => {
+      // Try hash-based routing first
+      let path = window.location.hash.slice(1); // Remove #
+
+      // Fallback to pathname if no hash
+      if (!path || path === '/') {
+        path = window.location.pathname;
+      }
+
+      // Match /id/NUMBER pattern
+      const match = path.match(/\/id\/(\d+)/);
+      if (match && gameData) {
+        const checkpointId = parseInt(match[1], 10);
+        const checkpointIndex = checkpointId - 1; // Convert ID to 0-based index
+
+        // Validate checkpoint exists
+        if (checkpointIndex >= 0 && checkpointIndex < gameData.checkpoints.length) {
+          setCurrentCheckpointIndex(checkpointIndex);
+          setGameState(GameState.FIND);
+          setIsEncounterTriggered(false);
+          setIsCapturePossible(false);
+
+          // Clear the URL hash to prevent re-triggering
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }
+    };
+
+    parseCheckpointFromURL();
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', parseCheckpointFromURL);
+    return () => window.removeEventListener('hashchange', parseCheckpointFromURL);
+  }, [gameData]);
   
   // Fetch game configuration data on mount
   useEffect(() => {
