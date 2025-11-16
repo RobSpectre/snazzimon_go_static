@@ -3,6 +3,7 @@ import FTUScreen from './components/FTUScreen';
 import FindScreen from './components/FindScreen';
 import CaptureScreen from './components/CaptureScreen';
 import ReplayScreen from './components/ReplayScreen';
+import Snazzidex from './components/Snazzidex';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useHaversine } from './hooks/useHaversine';
 import { GameState } from './types';
@@ -331,8 +332,12 @@ const App: React.FC = () => {
       case GameState.GAME_OVER:
         return (
             <div className="w-full h-full bg-slate-900 text-white flex flex-col items-center justify-center p-4 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-500/20 via-slate-900 to-slate-900">
-                <h1 className="text-5xl font-bold text-yellow-300 [text-shadow:0_4px_8px_rgba(0,0,0,0.5)]">Congratulations!</h1>
-                <p className="text-2xl mt-4">You've captured all the Snazzimons!</p>
+                <Snazzidex
+                  capturedSnazzimons={capturedSnazzimons}
+                  onClose={() => {}}
+                  onSnazzimonClick={handleStartReplay}
+                  isGameComplete={true}
+                />
             </div>
         );
 
