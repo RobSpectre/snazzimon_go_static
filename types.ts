@@ -34,4 +34,5 @@ export enum GameState {
   CAPTURE,
   REPLAY,
   GAME_OVER,
+  DEMO,
 }
