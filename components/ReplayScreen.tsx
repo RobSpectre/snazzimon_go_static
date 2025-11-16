@@ -15,7 +15,11 @@ const ReplayScreen: React.FC<ReplayScreenProps> = ({ snazzimon, successProbabili
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [needsUserInteraction, setNeedsUserInteraction] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [activeVideo, setActiveVideo] = useState<0 | 1>(0); // Toggle between two videos
+  const [nextVideoPreloaded, setNextVideoPreloaded] = useState(false);
+
+  const video0Ref = useRef<HTMLVideoElement>(null);
+  const video1Ref = useRef<HTMLVideoElement>(null);
 
   const handleVideoEnd = () => {
     if (captureState === 'intro') setCaptureState('reveal');
@@ -25,11 +29,32 @@ const ReplayScreen: React.FC<ReplayScreenProps> = ({ snazzimon, successProbabili
     else if (captureState === 'outro') onBack();
   };
 
-  const playVideo = async () => {
+  const getVideoState = (state: CaptureState): keyof SnazzimonData['video'] => {
+    return state === 'throwing' ? 'idle' : state;
+  };
+
+  // Preload next video
+  useEffect(() => {
+    const nextState = captureState === 'intro' ? 'reveal' : captureState === 'reveal' ? 'idle' : null;
+    if (nextState) {
+      const inactiveVideoRef = activeVideo === 0 ? video1Ref : video0Ref;
+      const inactiveVideo = inactiveVideoRef.current;
+      if (inactiveVideo) {
+        const nextVideoSrc = snazzimon.video[getVideoState(nextState)];
+        inactiveVideo.src = nextVideoSrc;
+        inactiveVideo.load();
+        setNextVideoPreloaded(true);
+      }
+    }
+  }, [captureState, snazzimon, activeVideo]);
+
+  const playVideo = async (videoRef: React.RefObject<HTMLVideoElement>, loadFirst: boolean = false) => {
     const video = videoRef.current;
     if (video) {
       try {
-        video.load();
+        if (loadFirst) {
+          video.load();
+        }
         await video.play();
         setNeedsUserInteraction(false);
       } catch (error) {
@@ -39,9 +64,45 @@ const ReplayScreen: React.FC<ReplayScreenProps> = ({ snazzimon, successProbabili
     }
   };
 
+  // Handle video transitions
   useEffect(() => {
-    playVideo();
-  }, [captureState]);
+    const currentVideoRef = activeVideo === 0 ? video0Ref : video1Ref;
+    const currentVideo = currentVideoRef.current;
+
+    if (currentVideo) {
+      const videoState = getVideoState(captureState);
+      const currentSrc = snazzimon.video[videoState];
+
+      // Check if we need to change the video source
+      if (!currentVideo.src.endsWith(currentSrc)) {
+        // If the next video was preloaded in the inactive video element, swap to it
+        const inactiveVideoRef = activeVideo === 0 ? video1Ref : video0Ref;
+        const inactiveVideo = inactiveVideoRef.current;
+
+        if (inactiveVideo && inactiveVideo.src.endsWith(currentSrc) && nextVideoPreloaded) {
+          // Swap to the preloaded video
+          setActiveVideo(activeVideo === 0 ? 1 : 0);
+          playVideo(inactiveVideoRef, false);
+          setNextVideoPreloaded(false);
+        } else {
+          // Load and play the new video in the current element
+          currentVideo.src = currentSrc;
+          playVideo(currentVideoRef, true);
+        }
+      }
+    }
+  }, [captureState, snazzimon, activeVideo, nextVideoPreloaded]);
+
+  // Initial video load
+  useEffect(() => {
+    const initialVideoRef = video0Ref;
+    const initialVideo = initialVideoRef.current;
+    if (initialVideo) {
+      const initialSrc = snazzimon.video.intro;
+      initialVideo.src = initialSrc;
+      playVideo(initialVideoRef, true);
+    }
+  }, [snazzimon]);
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (captureState === 'idle') {
@@ -71,11 +132,6 @@ const ReplayScreen: React.FC<ReplayScreenProps> = ({ snazzimon, successProbabili
     }, 1200); // 1.2s for the ball throw animation
   };
 
-  // 'throwing' is a visual animation state, not a video state.
-  // We keep the 'idle' video playing during the throw.
-  const videoState = captureState === 'throwing' ? 'idle' : captureState;
-  const currentVideoSrc = snazzimon.video[videoState as keyof typeof snazzimon.video];
-
   return (
     <div
         className="w-full h-full bg-black text-white flex flex-col items-center justify-center relative overflow-hidden"
@@ -92,16 +148,30 @@ const ReplayScreen: React.FC<ReplayScreenProps> = ({ snazzimon, successProbabili
             .animate-pulse-up { animation: pulse-up 1.5s ease-in-out infinite; }
         `}</style>
 
+        {/* Video 0 */}
         <video
-            ref={videoRef}
-            key={videoState}
-            className="absolute top-0 left-0 w-full h-full object-cover z-0"
-            src={currentVideoSrc}
+            ref={video0Ref}
+            className="absolute top-0 left-0 w-full h-full object-cover z-0 transition-opacity duration-300"
+            style={{ opacity: activeVideo === 0 ? 1 : 0 }}
             onEnded={handleVideoEnd}
             playsInline
             webkit-playsinline="true"
             preload="auto"
-            autoPlay
+            muted={isMuted}
+            loop={captureState === 'idle' || captureState === 'throwing'}
+        >
+            Your browser does not support the video tag.
+        </video>
+
+        {/* Video 1 */}
+        <video
+            ref={video1Ref}
+            className="absolute top-0 left-0 w-full h-full object-cover z-0 transition-opacity duration-300"
+            style={{ opacity: activeVideo === 1 ? 1 : 0 }}
+            onEnded={handleVideoEnd}
+            playsInline
+            webkit-playsinline="true"
+            preload="auto"
             muted={isMuted}
             loop={captureState === 'idle' || captureState === 'throwing'}
         >
@@ -139,7 +209,7 @@ const ReplayScreen: React.FC<ReplayScreenProps> = ({ snazzimon, successProbabili
       {needsUserInteraction && (
           <div
               className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 cursor-pointer"
-              onClick={playVideo}
+              onClick={() => playVideo(activeVideo === 0 ? video0Ref : video1Ref, false)}
           >
               <div className="bg-yellow-400 text-black rounded-full p-6 mb-4">
                   <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
