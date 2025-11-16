@@ -3,6 +3,8 @@ import FTUScreen from './components/FTUScreen';
 import FindScreen from './components/FindScreen';
 import CaptureScreen from './components/CaptureScreen';
 import ReplayScreen from './components/ReplayScreen';
+import Snazzidex from './components/Snazzidex';
+import DemoScreen from './components/DemoScreen';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useHaversine } from './hooks/useHaversine';
 import { GameState } from './types';
@@ -61,10 +63,11 @@ const App: React.FC = () => {
   const [isCapturePossible, setIsCapturePossible] = useState(false);
   const [isEncounterTriggered, setIsEncounterTriggered] = useState(false);
   const [replaySnazzimon, setReplaySnazzimon] = useState<SnazzimonData | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   const { location, error: geoError, permissionState, requestPermission } = useGeolocation();
 
-  // Parse URL for checkpoint ID (e.g., /#/id/1 or /id/1 or /id/1/capture)
+  // Parse URL for checkpoint ID (e.g., /#/id/1 or /id/1 or /id/1/capture) or /demo
   useEffect(() => {
     const parseCheckpointFromURL = () => {
       // Try hash-based routing first
@@ -73,6 +76,13 @@ const App: React.FC = () => {
       // Fallback to pathname if no hash
       if (!path || path === '/') {
         path = window.location.pathname;
+      }
+
+      // Check for /demo route
+      if (path === '/demo' && gameData) {
+        setIsDemoMode(true);
+        setGameState(GameState.DEMO);
+        return;
       }
 
       // Match /id/NUMBER or /id/NUMBER/capture pattern
@@ -220,6 +230,25 @@ const App: React.FC = () => {
     setReplaySnazzimon(null);
     setGameState(GameState.FIND);
   };
+
+  const handleDemoCheckpointSelect = (checkpointIndex: number) => {
+    setCurrentCheckpointIndex(checkpointIndex);
+    setGameState(GameState.CAPTURE);
+    setIsEncounterTriggered(false);
+    setIsCapturePossible(false);
+  };
+
+  const handleDemoCapture = () => {
+    if (!gameData || !currentCheckpoint) return;
+
+    const snazzimon = gameData.snazzimons.find(s => s.id === currentCheckpoint.snazzimonId);
+    if (snazzimon && !capturedSnazzimons.some(s => s.id === snazzimon.id)) {
+      setCapturedSnazzimons(prev => [...prev, snazzimon]);
+    }
+
+    // Return to demo screen
+    setGameState(GameState.DEMO);
+  };
   
   if (isLoading) {
     return (
@@ -300,7 +329,7 @@ const App: React.FC = () => {
           <CaptureScreen
             snazzimon={snazzimon}
             successProbability={currentCheckpoint.successProbability}
-            onCapture={handleCapture}
+            onCapture={isDemoMode ? handleDemoCapture : handleCapture}
           />
         );
 
@@ -331,9 +360,24 @@ const App: React.FC = () => {
       case GameState.GAME_OVER:
         return (
             <div className="w-full h-full bg-slate-900 text-white flex flex-col items-center justify-center p-4 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-500/20 via-slate-900 to-slate-900">
-                <h1 className="text-5xl font-bold text-yellow-300 [text-shadow:0_4px_8px_rgba(0,0,0,0.5)]">Congratulations!</h1>
-                <p className="text-2xl mt-4">You've captured all the Snazzimons!</p>
+                <Snazzidex
+                  capturedSnazzimons={capturedSnazzimons}
+                  onClose={() => {}}
+                  onSnazzimonClick={handleStartReplay}
+                  isGameComplete={true}
+                />
             </div>
+        );
+
+      case GameState.DEMO:
+        if (!gameData) return null;
+        return (
+          <DemoScreen
+            checkpoints={gameData.checkpoints}
+            allSnazzimons={gameData.snazzimons}
+            capturedSnazzimons={capturedSnazzimons}
+            onCheckpointSelect={handleDemoCheckpointSelect}
+          />
         );
 
       default:
